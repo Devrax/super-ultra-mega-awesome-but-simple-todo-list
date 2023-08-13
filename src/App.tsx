@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoList from "./TodoList";
 import "./styles.css";
 import FormTodoList from "./Form";
 
 export default function App() {
-  const [todos, setTodos] = useState(
-    [] as { title: string; isDone: boolean, id: string }[],
-  );
+  const [todos, setTodos] = useState(() => {
+    const localTodos = localStorage.getItem('ITEMS');
+    if(localTodos == null) return [] as { title: string; isDone: boolean, id: string }[];
+    return JSON.parse(localTodos) as { title: string; isDone: boolean, id: string }[];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('ITEMS', JSON.stringify(todos));
+  }, [todos]);
 
   const deleteHandler = (id: string) =>
     setTodos((currentTodos) => currentTodos.splice(currentTodos.findIndex(t => t.id === id), 1));
