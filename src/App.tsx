@@ -5,29 +5,31 @@ import FormTodoList from "./Form";
 
 export default function App() {
   const [todos, setTodos] = useState(
-    [] as { title: string; isDone: boolean }[],
+    [] as { title: string; isDone: boolean, id: string }[],
   );
 
-  const deleteHandler = (index: number) => {
-    const todosCopy = structuredClone(todos);
-    todosCopy.splice(index, 1);
-    setTodos(todosCopy);
-  };
+  const deleteHandler = (id: string) =>
+    setTodos((currentTodos) => currentTodos.splice(currentTodos.findIndex(t => t.id === id), 1));
 
-  const addTodoHandler = (title: string) => {
-    const todosCopy = structuredClone(todos);
-    setTodos([...todosCopy, { title, isDone: false }]);
-  };
+  const addTodoHandler = (title: string) =>
+    setTodos((currentTodos) => [...currentTodos, { title, isDone: false, id: crypto.randomUUID() }]);
+
+  const toggleTodos = (id: string, checked: boolean) => setTodos((currentTodos) => {
+    return currentTodos.map(todo => {
+      if(todo.id === id) {
+        return {...todo, isDone: checked};
+      };
+      return todo;
+    });
+  })
 
   return (
     <>
       <FormTodoList addTodo={addTodoHandler} />
-
       <h1 className="header">
         Todo List
       </h1>
-
-      <TodoList todos={todos} deleteHandle={deleteHandler} />
+      <TodoList todos={todos} deleteHandle={deleteHandler} toggleHandle={toggleTodos} />
     </>
   );
 }
